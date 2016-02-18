@@ -29,7 +29,7 @@ var cfgFile string
 
 // RootCmd is the base command for the application
 var RootCmd = &cobra.Command{
-	Use:   "waitstaff",
+	Use:   "smlr",
 	Short: "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
@@ -58,7 +58,7 @@ func init() {
 	// TODO: logging config
 	logrus.SetLevel(logrus.DebugLevel)
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.waitstaff.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smlr.yaml)")
 	RootCmd.PersistentFlags().DurationP("interval", "i", 3*time.Second, "interval betweeen checks")
 	RootCmd.PersistentFlags().DurationP("timeout", "t", 5*time.Minute, "timeout of all checks")
 
@@ -71,9 +71,9 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	}
 
-	viper.SetConfigName(".waitstaff") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")      // adding home directory as first search path
-	viper.AutomaticEnv()              // read in environment variables that match
+	viper.SetConfigName(".smlr") // name of config file (without extension)
+	viper.AddConfigPath("$HOME") // adding home directory as first search path
+	viper.AutomaticEnv()         // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

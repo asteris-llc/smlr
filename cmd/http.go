@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/asteris-llc/waitstaff/waitstaff"
+	"github.com/asteris-llc/smlr/smlr"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -39,7 +39,7 @@ wait for with the --method and --status flags, respectively.`,
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		http := waitstaff.HTTPWaiter{
+		http := smlr.HTTPWaiter{
 			Method:         viper.GetString("method"),
 			URL:            args[0],
 			ExpectedStatus: viper.GetInt("status"),

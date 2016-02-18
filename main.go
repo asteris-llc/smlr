@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/asteris-llc/waitstaff/cmd"
+import "github.com/asteris-llc/smlr/cmd"
 
 func main() {
 	cmd.Execute()

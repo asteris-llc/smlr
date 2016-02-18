@@ -1,4 +1,4 @@
-package: github.com/asteris-llc/waitstaff
+package: github.com/asteris-llc/smlr
 import:
 - package: github.com/Sirupsen/logrus
 - package: github.com/jpillora/backoff
