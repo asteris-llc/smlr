@@ -1,5 +1,7 @@
 # smlr
 
+[![Build Status](https://travis-ci.org/asteris-llc/smlr.svg?branch=master)](https://travis-ci.org/asteris-llc/smlr)
+
 smlr waits for service dependencies.
 
 smlr is short for "sommelier", but easier to spell
