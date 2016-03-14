@@ -2,7 +2,7 @@
 
 smlr waits for service dependencies.
 
-smlr is short for "sommelier", AKA a waiter with special knowledge and training.
+smlr is short for "sommelier", but easier to spell
 
 # Use
 
