@@ -56,7 +56,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	// TODO: logging config
-	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetLevel(logrus.InfoLevel)
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smlr.yaml)")
 	RootCmd.PersistentFlags().DurationP("interval", "i", 3*time.Second, "interval betweeen checks")
