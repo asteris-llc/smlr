@@ -1,0 +1,19 @@
+---
+language: go
+
+go:
+  - 1.6
+  - tip
+
+cache:
+  directories:
+    - vendor
+    - glide
+
+install:
+  - source ./travis-glide.sh
+  - glide install
+  - go get -v $(go list -f '{{range .TestImports}}{{.}} {{end}}' $(glide novendor))
+
+script:
+  - go test $(glide novendor)
