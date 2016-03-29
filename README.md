@@ -11,7 +11,7 @@ smlr is short for "sommelier", but easier to spell
 smlr can wait for several types of dependencies:
 
 - http
-- tcp (TODO)
+- tcp
 - script (TODO)
 
 Each of them has different use cases. In general, you should prefer to use HTTP

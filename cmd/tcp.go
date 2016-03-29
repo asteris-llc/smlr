@@ -26,12 +26,13 @@ import (
 	"golang.org/x/net/context"
 )
 
-// httpCmd represents the http command
-var httpCmd = &cobra.Command{
-	Use:   "http [url]",
-	Short: "wait for an HTTP health check",
-	Long: `wait for an HTTP health check. You can specify the method and status to
-	wait for with the --method and --status flags, respectively.`,
+// tcpCmd represents the tcp command
+var tcpCmd = &cobra.Command{
+	Use:   "tcp [url]:[port]",
+	Short: "wait for a TCP health check",
+	Long: `wait for a TCP health check. You can specify the content to wait for
+	and to write with the --content and --write flags, respectively. You can
+	specify read/write timeouts with the --iotimeout flag.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return errors.New("expected one argument, the URL to wait for")
@@ -39,16 +40,16 @@ var httpCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		http := smlr.HTTPWaiter{
-			Method:         viper.GetString("method"),
-			URL:            args[0],
-			ExpectedStatus: viper.GetInt("status"),
-			Content:        viper.GetString("content"),
-			EntireContent:  viper.GetBool("complete"),
+		tcp := smlr.TCPWaiter{
+			URL:           args[0],
+			Content:       viper.GetString("content"),
+			Write:         viper.GetString("write"),
+			IOTimeout:     viper.GetDuration("iotimeout"),
+			EntireContent: viper.GetBool("complete"),
 		}
 
 		ctx, cancel := context.WithCancel(context.Background())
-		for status := range http.Wait(ctx, viper.GetDuration("interval"), viper.GetDuration("timeout")) {
+		for status := range tcp.Wait(ctx, viper.GetDuration("interval"), viper.GetDuration("timeout")) {
 			logger := logrus.WithFields(logrus.Fields{
 				"message": status.Message,
 				"done":    status.Done,
@@ -66,12 +67,12 @@ var httpCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand(httpCmd)
+	RootCmd.AddCommand(tcpCmd)
 
-	httpCmd.Flags().StringP("method", "m", "GET", "method to use")
-	httpCmd.Flags().Int32P("status", "s", 200, "status to check for")
-	httpCmd.Flags().StringP("content", "c", "", "content to check for")
-	httpCmd.Flags().Bool("complete", false, "if content is the complete expected response")
+	tcpCmd.Flags().StringP("content", "c", "", "content to check for")
+	tcpCmd.Flags().StringP("write", "w", "", "write this to the connection before listening")
+	tcpCmd.Flags().DurationP("iotimeout", "", 5*time.Second, "timeout of read/write operations")
+	tcpCmd.Flags().Bool("complete", false, "if content + EOF is the complete expected response.")
 
-	viper.BindPFlags(httpCmd.Flags())
+	viper.BindPFlags(tcpCmd.Flags())
 }
