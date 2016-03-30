@@ -25,7 +25,7 @@ type TCPWaiter struct {
 	URL           string
 	Content       string
 	Write         string        // write this to the connection before listening
-	IOTimeout     time.Duration // how long to wait for the EOF before retrying
+	IOTimeout     time.Duration // how long to wait for r/w actions to complete
 	EntireContent bool
 }
 
@@ -145,19 +145,24 @@ func (t *TCPWaiter) request(ctx context.Context) *Status {
 
 		// send all the bytes down a channel as they come over the network
 		go func(rdr *bufio.Reader, out chan byte, done chan bool) {
+			brk := false
 			for {
+				if brk {
+					break
+				}
 				conn.SetDeadline(time.Now().Add(t.IOTimeout))
 				b, err := rdr.ReadByte()
 				switch {
 				case err == nil: // breaks switch
 				case err == io.EOF:
 					eof <- true
-					break
+					brk = true
 				case strings.Contains(err.Error(), "i/o timeout"):
 					errs <- errNoMatchTimeout
+					brk = true
 				default:
 					errs <- err
-					break
+					brk = true
 				}
 				out <- b
 			}
@@ -167,7 +172,6 @@ func (t *TCPWaiter) request(ctx context.Context) *Status {
 		// progressively read data until we hit EOF, timeout, or desired string
 		for {
 			// this won't loop infinitely b/c there's a timeout on the err chan
-			next := time.After(0)
 			select {
 			case <-matched: // have we already matched?
 				return &Status{Done: true, Message: "service available"}
@@ -184,8 +188,6 @@ func (t *TCPWaiter) request(ctx context.Context) *Status {
 				}(content, []byte(t.Content), matched)
 			case <-eof: // we've read everything and not gotten a match
 				return &Status{Done: true, Error: errNoMatch}
-			case <-next: // otherwise, keep trying
-				continue
 			}
 		}
 	}
